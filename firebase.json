@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "site": "todd-image-creator",
+    "public": "dist/image-creator/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

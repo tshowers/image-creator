@@ -1,0 +1,56 @@
+@import "@taliferro/ui/styles/controls.css";
+
+:root {
+  --ic-bg: #ffffff;
+  --ic-surface: #f4f6f9;
+  --ic-surface-raised: #ffffff;
+  --ic-text: var(--tt-control-text);
+  --ic-muted: var(--tt-control-muted);
+  --ic-border: var(--tt-control-border);
+  --ic-primary: var(--tt-control-primary);
+  --ic-primary-deep: var(--tt-control-primary-deep);
+  --ic-user-bubble: #0f172a;
+  --ic-user-text: #ffffff;
+  --ic-danger: var(--tt-control-danger);
+  --ic-danger-surface: var(--tt-control-danger-surface);
+  --ic-shimmer: rgba(255, 255, 255, .55);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ic-bg: #0e151e;
+    --ic-surface: #16202c;
+    --ic-surface-raised: #1a2535;
+    --ic-user-bubble: #243247;
+    --ic-user-text: #f8fafc;
+    --ic-shimmer: rgba(255, 255, 255, .05);
+    color-scheme: dark;
+  }
+}
+
+[data-theme="dark"] {
+  --ic-bg: #0e151e;
+  --ic-surface: #16202c;
+  --ic-surface-raised: #1a2535;
+  --ic-user-bubble: #243247;
+  --ic-user-text: #f8fafc;
+  --ic-shimmer: rgba(255, 255, 255, .05);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--ic-bg);
+  color: var(--ic-text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,162 @@
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"><img src="todd-icon.png" alt="" /></span>
+      <span class="brand-name">TODD <span>Image Creator</span></span>
+    </div>
+
+    <div class="topbar-actions">
+      @if (auth.user()) {
+        @if (usage(); as u) {
+          <span class="usage" [class.usage-empty]="u.remaining === 0" title="Resets at midnight Pacific time">
+            {{ u.remaining }} of {{ u.limit }}<span class="long"> images</span> left<span class="long"> today</span>
+          </span>
+        }
+        @if (messages().length) {
+          <button type="button" class="ghost" (click)="startOver()" [disabled]="busy()">New chat</button>
+        }
+      }
+      <app-platform-menu [isAdmin]="isAdmin()" [isLoggedIn]="!!auth.user()" (signIn)="auth.signIn()" (signOut)="signOut()" />
+    </div>
+  </header>
+
+  <main class="thread" #scroller>
+    <div class="thread-inner">
+      @if (auth.user() === undefined) {
+        <div class="loading-page"><span class="dots"><i></i><i></i><i></i></span></div>
+      } @else if (!auth.user() || !messages().length) {
+        <section class="intro">
+          <span class="intro-mark"><img src="todd-icon.png" alt="TODD" /></span>
+          <h1>What should we create?</h1>
+          <p>
+            Tell TODD what you want, or attach a logo or example image to work from.
+            TODD will ask if anything's unclear, then create the image for you to download.
+          </p>
+          <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
+
+          @if (auth.user()) {
+            <div class="suggestions">
+              @for (suggestion of suggestions; track suggestion) {
+                <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">{{ suggestion }}</button>
+              }
+            </div>
+          } @else {
+            <button type="button" class="primary sign-in" (click)="auth.signIn()">Sign in with TODD</button>
+          }
+        </section>
+      } @else {
+        @for (message of messages(); track $index; let i = $index) {
+          @if (message.role === 'user') {
+            <div class="row row-user">
+              <div class="user-message">
+                @if (message.images.length) {
+                  <div class="user-images">
+                    @for (image of message.images; track image.id) {
+                      <img [src]="image.dataUrl" [alt]="image.name || 'Attached image'" />
+                    }
+                  </div>
+                }
+                @if (message.text) {
+                  <div class="bubble">{{ message.text }}</div>
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="row row-todd">
+              <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
+              <div class="todd-message">
+                <p class="todd-text">{{ message.text }}</p>
+
+                @if (message.generating) {
+                  <div class="image-placeholder" [style.aspect-ratio]="placeholderRatio(message.plan)">
+                    <span>Creating your image… this can take up to a minute.</span>
+                  </div>
+                }
+
+                @for (image of message.images; track image.id) {
+                  <figure class="result">
+                    <img [src]="image.dataUrl" alt="Image created by TODD" />
+                    <figcaption>
+                      <button type="button" class="primary" (click)="download(image)">Download PNG</button>
+                      @if (image.width) {
+                        <span class="dimensions">{{ image.width }} × {{ image.height }}</span>
+                      }
+                    </figcaption>
+                  </figure>
+                }
+
+                @if (message.error) {
+                  <div class="error">
+                    <span>{{ message.error }}</span>
+                    @if (usage()?.remaining !== 0) {
+                      <button type="button" class="ghost" (click)="generate(i)" [disabled]="busy()">Try again</button>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+
+        @if (thinking()) {
+          <div class="row row-todd">
+            <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
+            <span class="dots" aria-label="TODD is thinking"><i></i><i></i><i></i></span>
+          </div>
+        }
+      }
+    </div>
+  </main>
+
+  @if (auth.user()) {
+    <footer class="composer-area">
+      @if (notice()) {
+        <div class="notice" role="status">
+          <span>{{ notice() }}</span>
+          @if (notice().startsWith('Your session expired')) {
+            <button type="button" class="ghost" (click)="auth.signIn()">Sign in</button>
+          }
+          <button type="button" class="dismiss" (click)="notice.set('')" aria-label="Dismiss">×</button>
+        </div>
+      }
+
+      <div class="composer">
+        @if (attachments().length) {
+          <div class="attachments">
+            @for (image of attachments(); track image.id) {
+              <div class="attachment">
+                <img [src]="image.thumbnail" [alt]="image.name || 'Attachment'" />
+                <button type="button" (click)="removeAttachment(image.id)" [attr.aria-label]="'Remove ' + image.name">×</button>
+              </div>
+            }
+          </div>
+        }
+
+        <textarea
+          #composer
+          rows="1"
+          placeholder="Describe the image you want…"
+          [ngModel]="draft()"
+          (ngModelChange)="draft.set($event)"
+          (input)="autoGrow(composer)"
+          (keydown)="onComposerKeydown($event)"
+        ></textarea>
+
+        <div class="composer-actions">
+          <button type="button" class="icon-button" (click)="openFilePicker()" title="Attach images" aria-label="Attach images">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          </button>
+          <span class="hint">Attach a logo or example · Enter to send</span>
+          <button type="button" class="send" (click)="send()" [disabled]="!canSend()" aria-label="Send">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+          </button>
+        </div>
+        <input #fileInput type="file" [accept]="acceptedTypes" multiple hidden (change)="onFilesPicked(fileInput)" />
+      </div>
+    </footer>
+  }
+
+  @if (dragging()) {
+    <div class="drop-overlay"><div>Drop images for TODD to use</div></div>
+  }
+</div>
