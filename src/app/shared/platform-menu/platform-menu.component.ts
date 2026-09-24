@@ -79,6 +79,8 @@ export class PlatformMenuComponent implements OnChanges {
     // host through the signIn/signOut outputs.
     this.appRoutes = [
       { label: 'Home', route: '/' },
+      { label: 'Help', route: '/help' },
+      { label: 'About', route: '/about' },
       this.isLoggedIn
         ? { label: 'Sign Out', route: '/', signOut: true }
         : { label: 'Sign In', route: '/', signIn: true },
