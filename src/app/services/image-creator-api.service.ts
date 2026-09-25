@@ -6,8 +6,10 @@ import { AuthService } from './auth.service';
 
 export interface Usage {
   used: number;
-  limit: number;
-  remaining: number;
+  /** Null when `unlimited` (the master tenant has no daily cap). */
+  limit: number | null;
+  remaining: number | null;
+  unlimited?: boolean;
 }
 
 export type ImageSize = '1024x1024' | '1536x1024' | '1024x1536' | '1248x2688';

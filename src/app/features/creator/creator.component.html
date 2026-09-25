@@ -8,9 +8,13 @@
     <div class="topbar-actions">
       @if (auth.user()) {
         @if (usage(); as u) {
-          <span class="usage" [class.usage-empty]="u.remaining === 0" title="Resets at midnight Pacific time">
-            {{ u.remaining }} of {{ u.limit }}<span class="long"> images</span> left<span class="long"> today</span>
-          </span>
+          @if (u.unlimited) {
+            <span class="usage" title="No daily limit on this account">Unlimited<span class="long"> images</span></span>
+          } @else {
+            <span class="usage" [class.usage-empty]="u.remaining === 0" title="Resets at midnight Pacific time">
+              {{ u.remaining }} of {{ u.limit }}<span class="long"> images</span> left<span class="long"> today</span>
+            </span>
+          }
         }
         @if (messages().length) {
           <button type="button" class="ghost" (click)="startOver()" [disabled]="busy()">New chat</button>
