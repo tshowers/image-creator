@@ -86,7 +86,14 @@ export class PlatformMenuComponent implements OnChanges {
         : { label: 'Sign In', route: '/', signIn: true },
     ];
 
-    this.accountItems = getPlatformMenuItems().filter( ( item ) => item.label !== 'Billing' && ( !item.adminOnly || this.isAdmin ) );
+    // Help already has its own route above, and the per-account TODD pages
+    // are meaningless before sign-in.
+    const hidden = new Set( [ 'platform-billing', 'platform-help' ] );
+    const signedInOnly = new Set( [ 'platform-momentum', 'platform-profile', 'platform-settings', 'platform-admin' ] );
+    this.accountItems = getPlatformMenuItems().filter( ( item ) =>
+      !hidden.has( item.id ) &&
+      ( this.isLoggedIn || !signedInOnly.has( item.id ) ) &&
+      ( !item.adminOnly || this.isAdmin ) );
   }
 
   trackByLabel ( _index: number, item: { label: string } ): string {
