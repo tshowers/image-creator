@@ -20,7 +20,7 @@
           <button type="button" class="ghost" (click)="startOver()" [disabled]="busy()">New chat</button>
         }
       }
-      <app-platform-menu [isAdmin]="isAdmin()" [isLoggedIn]="!!auth.user()" (signIn)="auth.signIn()" (signOut)="signOut()" />
+      <app-platform-menu [isAdmin]="isAdmin()" [isLoggedIn]="!!auth.user()" [userName]="auth.user()?.displayName || ''" [userEmail]="auth.user()?.email || ''" (signIn)="auth.signIn()" (signOut)="signOut()" />
     </div>
   </header>
 
