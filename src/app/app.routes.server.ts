@@ -1,10 +1,10 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
-// '' (CreatorComponent) injects AuthService, whose constructor calls
-// Firebase's onAuthStateChanged(getAuth(), ...) unconditionally — unsafe to
-// evaluate at build time in Node. Only the two purely static content pages,
-// which touch nothing auth-related, are prerendered.
+// Public pages are built ahead of time as static HTML for search engines
+// (taliferro-ui/PRODUCT-STANDARD.md, part 4). AuthService skips Firebase
+// when there's no browser, so '' renders as the signed-out page.
 export const serverRoutes: ServerRoute[] = [
+  { path: '', renderMode: RenderMode.Prerender },
   { path: 'help', renderMode: RenderMode.Prerender },
   { path: 'about', renderMode: RenderMode.Prerender },
   { path: '**', renderMode: RenderMode.Client },

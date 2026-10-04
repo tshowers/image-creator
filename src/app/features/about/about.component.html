@@ -1,47 +1,25 @@
-<main class="about-page" data-cy="about-shell">
-  <div class="app-global-actions"><app-platform-menu /></div>
-  <header class="about-hero">
-    <div class="about-hero__eyebrow">About</div>
-    <div class="about-hero__content">
-      <div>
-        <p class="about-hero__context">A Taliferro Tech product · Part of TODD</p>
-        <h1>Describe it. TODD creates it.</h1>
-        <p class="about-hero__lead">TODD Image Creator turns a plain-language description into a downloadable image — a logo, an icon, a banner — right in the conversation. Attach a reference image or an existing logo and TODD works from that instead.</p>
-      </div>
-      <img src="todd-icon.png" alt="TODD" class="about-hero__logo" />
+<!-- The shared About template (taliferro-ui); Image Creator's story follows it. -->
+<app-product-pages page="about">
+  <section class="pp-section" aria-labelledby="ic-uses-title">
+    <p class="pp-kicker">What it’s for</p>
+    <h2 id="ic-uses-title">Business images, the right size, first time</h2>
+    <p>Most image tools give you a picture and leave the fitting to you. Image Creator asks what the image is for and how big it must be, then makes it to fit.</p>
+    <div class="pp-cards">
+      @for (u of uses; track u.title) {
+        <article><h3>{{ u.title }}</h3><p>{{ u.copy }}</p></article>
+      }
     </div>
-  </header>
-
-  <section class="about-grid" aria-label="TODD Image Creator product definition">
-    <article class="about-card">
-      <span class="about-card__label">What it is</span>
-      <h2>A conversation, not a form.</h2>
-      <p>Tell TODD what you want. If anything's unclear, TODD asks before generating — no prompt-engineering, no settings panel to learn.</p>
-    </article>
-    <article class="about-card">
-      <span class="about-card__label">Category</span>
-      <h2>AI image generation.</h2>
-      <p>TODD Image Creator belongs to the design and image-generation category — logos, icons, and banners generated from text or an attached reference image.</p>
-    </article>
-    <article class="about-card">
-      <span class="about-card__label">Who made it</span>
-      <h2>Taliferro Tech, LLC.</h2>
-      <p>TODD Image Creator is made by Taliferro Tech and is part of TODD, the Momentum System. Taliferro Tech creates connected software products that help people move from information to action.</p>
-      <a href="https://taliferro.com" target="_blank" rel="noopener noreferrer">Visit Taliferro Tech <span aria-hidden="true">↗</span></a>
-    </article>
-    <article class="about-card">
-      <span class="about-card__label">Privacy</span>
-      <h2>Nothing is saved.</h2>
-      <p>Images exist for the conversation only. Download anything you want to keep before you leave — there's no history or gallery to come back to.</p>
-    </article>
   </section>
 
-  <section class="about-links">
-    <a routerLink="/">Try Image Creator <span aria-hidden="true">→</span></a>
-    <a routerLink="/help">Read the Help guide <span aria-hidden="true">→</span></a>
+  <section class="pp-section" aria-labelledby="ic-private-title">
+    <p class="pp-kicker">Nothing is kept</p>
+    <h2 id="ic-private-title">Your images stay yours</h2>
+    <p>The conversation, your uploads and the images TODD makes live only in your browser tab. Download what you want to keep; when you close the tab, they’re gone.</p>
   </section>
-  <footer class="about-footer">
-    <a routerLink="/">← Back to Image Creator</a>
-    <span>TODD Image Creator · Taliferro Tech, LLC</span>
-  </footer>
-</main>
+
+  <section class="pp-section" aria-labelledby="ic-who-title">
+    <p class="pp-kicker">Who makes it</p>
+    <h2 id="ic-who-title">Free with TODD, from Taliferro Tech</h2>
+    <p>Image Creator is made by Taliferro Tech in Seattle. Sign in with your TODD account to use your daily image allowance.</p>
+  </section>
+</app-product-pages>

@@ -5,7 +5,8 @@ import { initializeApp } from 'firebase/app';
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+// No client hydration: the public pages are prerendered for search engines
+// and the browser renders fresh (signed-in state differs from the build).
 import { idTokenInterceptor } from './core/interceptors/id-token.interceptor';
 
 initializeApp( environment.firebaseConfig );
@@ -14,6 +15,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection( { eventCoalescing: true } ),
     provideRouter( routes ),
-    provideHttpClient(withFetch(), withInterceptors([idTokenInterceptor])), provideClientHydration(withEventReplay()),
+    provideHttpClient(withFetch(), withInterceptors([idTokenInterceptor])),
   ],
 };

@@ -14,6 +14,11 @@ export class AuthService {
   private readonly pendingLoginStorageKey = 'image_creator_hosted_login_pending';
 
   constructor () {
+    // Prerendering (no browser): render the signed-out page for search engines.
+    if ( typeof window === 'undefined' ) {
+      this.user.set( null );
+      return;
+    }
     onAuthStateChanged( getAuth(), ( user ) => this.user.set( user ) );
   }
 

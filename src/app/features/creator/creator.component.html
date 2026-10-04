@@ -1,163 +1,252 @@
-<div class="app">
+<!-- Image Creator (design_handoff_todd_tools 8a empty, 8b image made, 8c
+     phone). Cyan. -->
+<div class="app" [class.app--panel]="!!auth.user() && !!selected()">
   <header class="topbar">
-    <div class="brand">
+    <a class="brand" routerLink="/">
       <span class="brand-mark"><img src="todd-icon.png" alt="" /></span>
-      <span class="brand-name">TODD <span>Image Creator</span></span>
-    </div>
+      <span class="brand-name"><span class="brand-todd">TODD </span><span class="brand-product">Image Creator</span></span>
+    </a>
 
     <div class="topbar-actions">
       @if (auth.user()) {
         @if (usage(); as u) {
           @if (u.unlimited) {
-            <span class="usage" title="No daily limit on this account">Unlimited<span class="long"> images</span></span>
+            <span class="usage" title="No daily limit on this account"><span class="long">Unlimited images</span><span class="short">Unlimited</span></span>
           } @else {
             <span class="usage" [class.usage-empty]="u.remaining === 0" title="Resets at midnight Pacific time">
-              {{ u.remaining }} of {{ u.limit }}<span class="long"> images</span> left<span class="long"> today</span>
+              <span class="long">{{ u.remaining }} of {{ u.limit }} left today</span><span class="short">{{ u.remaining }} left</span>
             </span>
           }
         }
         @if (messages().length) {
-          <button type="button" class="ghost" (click)="startOver()" [disabled]="busy()">New chat</button>
+          <button type="button" class="pill" (click)="startOver()" [disabled]="busy()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg><span class="long">New image</span>
+          </button>
         }
+      } @else if (auth.user() === null) {
+        <button type="button" class="pill" (click)="auth.signIn()">Sign in</button>
       }
       <app-platform-menu [isAdmin]="isAdmin()" [isLoggedIn]="!!auth.user()" [userName]="auth.user()?.displayName || ''" [userEmail]="auth.user()?.email || ''" (signIn)="auth.signIn()" (signOut)="signOut()" />
     </div>
   </header>
 
-  <main class="thread" #scroller>
-    <div class="thread-inner">
-      @if (auth.user() === undefined) {
-        <div class="loading-page"><span class="dots"><i></i><i></i><i></i></span></div>
-      } @else if (!auth.user() || !messages().length) {
-        <section class="intro">
-          <span class="intro-mark"><img src="todd-icon.png" alt="TODD" /></span>
-          <h1>What should we create?</h1>
-          <p>
-            Tell TODD what you want, or attach a logo or example image to work from.
-            TODD will ask if anything's unclear, then create the image for you to download.
-          </p>
-          <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
-
-          @if (auth.user()) {
-            <div class="suggestions">
-              @for (suggestion of suggestions; track suggestion) {
-                <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">{{ suggestion }}</button>
-              }
-            </div>
-          } @else {
-            <button type="button" class="primary sign-in" (click)="auth.signIn()">Sign in with TODD</button>
-          }
-        </section>
-      } @else {
-        @for (message of messages(); track $index; let i = $index) {
-          @if (message.role === 'user') {
-            <div class="row row-user">
-              <div class="user-message">
-                @if (message.images.length) {
-                  <div class="user-images">
-                    @for (image of message.images; track image.id) {
-                      <img [src]="image.dataUrl" [alt]="image.name || 'Attached image'" />
+  @if (auth.user() === undefined) {
+    <div class="loading-page"><span class="dots"><i></i><i></i><i></i></span></div>
+  } @else {
+    <div class="work">
+      <section class="chat">
+        <main class="thread" #scroller>
+          <div class="thread-inner">
+            @if (!auth.user() || !messages().length) {
+              <!-- 8a -->
+              <section class="intro">
+                <span class="intro-mark"><span class="um-glyph" data-key="image-creator"></span></span>
+                <h1>What should we create?</h1>
+                <p>
+                  Tell TODD what you want, or attach a logo or example image to work from.
+                  TODD will ask if anything's unclear, then create the image for you to download.
+                </p>
+                @if (auth.user()) {
+                  <span class="label">Try one</span>
+                  <div class="suggestions">
+                    @for (suggestion of suggestions; track suggestion) {
+                      <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">
+                        <span>{{ suggestion }}</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7" /></svg>
+                      </button>
                     }
                   </div>
-                }
-                @if (message.text) {
-                  <div class="bubble">{{ message.text }}</div>
-                }
-              </div>
-            </div>
-          } @else {
-            <div class="row row-todd">
-              <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
-              <div class="todd-message">
-                <p class="todd-text">{{ message.text }}</p>
-
-                @if (message.generating) {
-                  <div class="image-placeholder" [style.aspect-ratio]="placeholderRatio(message.plan)">
-                    <span>Creating your image… this can take up to a minute.</span>
+                } @else {
+                  <div class="intro-actions">
+                    <button type="button" class="primary big" (click)="auth.signIn()">Sign in with TODD</button>
+                    <a class="pill big" routerLink="/help">How it works</a>
                   </div>
+                  <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
+                  <p class="tt-made-by tt-made-by--center"><a href="https://todd.taliferro.tech" target="_blank" rel="noopener"><span class="tt-made-by__todd"><img src="todd-icon.png" alt="" /></span>Powered by <strong>TODD</strong></a><i aria-hidden="true"></i><a href="https://find.taliferro.tech" target="_blank" rel="noopener">Also from us <span class="um-logo" data-app="find" aria-hidden="true"></span><strong>Find</strong></a></p>
                 }
-
-                @for (image of message.images; track image.id) {
-                  <figure class="result">
-                    <img [src]="image.dataUrl" alt="Image created by TODD" />
-                    <figcaption>
-                      <button type="button" class="primary" (click)="download(image)">Download PNG</button>
-                      @if (image.width) {
-                        <span class="dimensions">{{ image.width }} × {{ image.height }}</span>
+              </section>
+            } @else {
+              @for (message of messages(); track $index; let i = $index) {
+                @if (message.role === 'user') {
+                  <div class="row row-user">
+                    <div class="user-message">
+                      @for (image of message.images; track image.id) {
+                        <span class="file-chip">
+                          <span class="file-chip__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /></svg></span>
+                          {{ image.name || 'Attached image' }}
+                        </span>
                       }
-                    </figcaption>
-                  </figure>
-                }
+                      @if (message.text) {
+                        <div class="bubble"><span class="bubble-text" [class.clamped]="!expanded().has(i) && promptLines(message.text) > 7">{{ message.text }}</span></div>
+                        @if (promptLines(message.text) > 7) {
+                          <button type="button" class="show-more" (click)="toggleExpanded(i)">
+                            {{ expanded().has(i) ? 'Show less' : 'Show full prompt · ' + (promptLines(message.text) - 7) + ' lines more' }}
+                          </button>
+                        }
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="row row-todd">
+                    <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
+                    <div class="todd-message">
+                      <p class="todd-text">{{ message.text }}</p>
 
-                @if (message.error) {
-                  <div class="error">
-                    <span>{{ message.error }}</span>
-                    @if (usage()?.remaining !== 0) {
-                      <button type="button" class="ghost" (click)="generate(i)" [disabled]="busy()">Try again</button>
-                    }
+                      @if (message.generating) {
+                        <div class="image-placeholder" [style.aspect-ratio]="placeholderRatio(message.plan)">
+                          <span class="dots small"><i></i><i></i><i></i></span>
+                          <span>Creating your image… this can take up to a minute.</span>
+                        </div>
+                      }
+
+                      @for (image of message.images; track image.id) {
+                        @if (image.kind === 'generated') {
+                          <!-- Laptop: a link card to the panel. Phone: the image inline (8c). -->
+                          <button type="button" class="artifact" [class.is-on]="selected()?.image === image" (click)="selectVersion(image)">
+                            <span class="um-glyph" data-key="image-creator" aria-hidden="true"></span>
+                            <span class="artifact-text">
+                              <strong>{{ image.width ? image.width + ' × ' + image.height + ' px' : 'Your image' }}</strong>
+                              <small>{{ selected()?.image === image ? 'Showing on the right' : 'Show this version' }}</small>
+                            </span>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                          </button>
+                          <figure class="inline-result">
+                            <img [src]="image.dataUrl" alt="Image created by TODD" />
+                            @if (image.width) {
+                              <figcaption>{{ image.width }} × {{ image.height }} px · PNG · {{ versionLabel(image) }}</figcaption>
+                            }
+                            <div class="inline-actions">
+                              <button type="button" class="primary" (click)="download(image)">Download</button>
+                              <button type="button" class="pill" (click)="requestChange('Make a variation')" [disabled]="busy() || noneLeft()">Variation</button>
+                            </div>
+                          </figure>
+                          @if (isNewest(image) && !busy() && !noneLeft()) {
+                            <div class="quick">
+                              @for (change of quickChanges; track change) {
+                                <button type="button" (click)="requestChange(change)">{{ change }}</button>
+                              }
+                            </div>
+                          }
+                        }
+                      }
+
+                      @if (message.error) {
+                        <div class="error">
+                          <span>{{ message.error }}</span>
+                          @if (usage()?.remaining !== 0) {
+                            <button type="button" class="pill" (click)="generate(i)" [disabled]="busy()">Try again</button>
+                          }
+                        </div>
+                      }
+                    </div>
                   </div>
                 }
-              </div>
-            </div>
-          }
-        }
+              }
 
-        @if (thinking()) {
-          <div class="row row-todd">
-            <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
-            <span class="dots" aria-label="TODD is thinking"><i></i><i></i><i></i></span>
-          </div>
-        }
-      }
-    </div>
-  </main>
-
-  @if (auth.user()) {
-    <footer class="composer-area">
-      @if (notice()) {
-        <div class="notice" role="status">
-          <span>{{ notice() }}</span>
-          @if (notice().startsWith('Your session expired')) {
-            <button type="button" class="ghost" (click)="auth.signIn()">Sign in</button>
-          }
-          <button type="button" class="dismiss" (click)="notice.set('')" aria-label="Dismiss">×</button>
-        </div>
-      }
-
-      <div class="composer">
-        @if (attachments().length) {
-          <div class="attachments">
-            @for (image of attachments(); track image.id) {
-              <div class="attachment">
-                <img [src]="image.thumbnail" [alt]="image.name || 'Attachment'" />
-                <button type="button" (click)="removeAttachment(image.id)" [attr.aria-label]="'Remove ' + image.name">×</button>
-              </div>
+              @if (thinking()) {
+                <div class="row row-todd">
+                  <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
+                  <span class="dots" aria-label="TODD is thinking"><i></i><i></i><i></i></span>
+                </div>
+              }
             }
           </div>
+        </main>
+
+        @if (auth.user()) {
+          <footer class="composer-area">
+            @if (notice()) {
+              <div class="notice" role="status">
+                <span>{{ notice() }}</span>
+                @if (notice().startsWith('Your session expired')) {
+                  <button type="button" class="pill" (click)="auth.signIn()">Sign in</button>
+                }
+                <button type="button" class="dismiss" (click)="notice.set('')" aria-label="Dismiss">×</button>
+              </div>
+            }
+
+            <div class="composer">
+              @if (attachments().length) {
+                <div class="attachments">
+                  @for (image of attachments(); track image.id) {
+                    <div class="attachment">
+                      <img [src]="image.thumbnail" [alt]="image.name || 'Attachment'" />
+                      <button type="button" (click)="removeAttachment(image.id)" [attr.aria-label]="'Remove ' + image.name">×</button>
+                    </div>
+                  }
+                </div>
+              }
+
+              <textarea
+                #composer
+                rows="1"
+                [placeholder]="noneLeft() ? 'No images left today' : (selected() ? 'Ask for changes…' : 'Describe the image you want…')"
+                [disabled]="noneLeft()"
+                [ngModel]="draft()"
+                (ngModelChange)="draft.set($event)"
+                (input)="autoGrow(composer)"
+                (keydown)="onComposerKeydown($event)"
+              ></textarea>
+
+              <div class="composer-actions">
+                <button type="button" class="attach" (click)="openFilePicker()" title="Attach a logo or example">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg><span>Logo or example</span>
+                </button>
+                <span class="hint">Enter to send</span>
+                <button type="button" class="send" [class.is-ready]="canSend() && !noneLeft()" (click)="send()" [disabled]="!canSend() || noneLeft()" aria-label="Send">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+                </button>
+              </div>
+              <input #fileInput type="file" [accept]="acceptedTypes" multiple hidden (change)="onFilesPicked(fileInput)" />
+            </div>
+            @if (!selected()) {
+              <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
+            }
+          </footer>
+        } @else {
+          <footer class="page-foot">
+            <span><a routerLink="/help">Help</a><i aria-hidden="true">·</i><a routerLink="/about">About</a></span>
+            <span>Taliferro Tech, LLC</span>
+          </footer>
         }
+      </section>
 
-        <textarea
-          #composer
-          rows="1"
-          placeholder="Describe the image you want…"
-          [ngModel]="draft()"
-          (ngModelChange)="draft.set($event)"
-          (input)="autoGrow(composer)"
-          (keydown)="onComposerKeydown($event)"
-        ></textarea>
+      @if (auth.user() && selected(); as current) {
+        <!-- 8b: the selected version -->
+        <aside class="panel" aria-label="Image">
+          <div class="panel-head">
+            <div>
+              <h2>{{ current.title }}</h2>
+              <p>{{ current.image.width ? current.image.width + ' × ' + current.image.height + ' px · ' : '' }}PNG · {{ versionLabel(current.image) }}</p>
+            </div>
+            <span class="panel-gap"></span>
+            <button type="button" class="pill pill--bg" (click)="copyImage(current.image)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>{{ copied() ? 'Copied' : 'Copy' }}
+            </button>
+            <button type="button" class="primary" (click)="download(current.image)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>Download PNG
+            </button>
+          </div>
 
-        <div class="composer-actions">
-          <button type="button" class="icon-button" (click)="openFilePicker()" title="Attach images" aria-label="Attach images">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-          </button>
-          <span class="hint">Attach a logo or example · Enter to send</span>
-          <button type="button" class="send" (click)="send()" [disabled]="!canSend()" aria-label="Send">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
-          </button>
-        </div>
-        <input #fileInput type="file" [accept]="acceptedTypes" multiple hidden (change)="onFilesPicked(fileInput)" />
-      </div>
-    </footer>
+          <div class="stage">
+            <img #stageImg [src]="current.image.dataUrl" alt="Image created by TODD" (load)="onStageLoad(stageImg)" />
+          </div>
+          <p class="stage-caption">Shown at {{ shownPercent() }}% of actual size</p>
+
+          @if (versions().length > 1) {
+            <span class="label">Versions</span>
+            <div class="versions">
+              @for (version of versions(); track version.image.id; let n = $index) {
+                <button type="button" class="version" [class.is-on]="version.image === current.image" (click)="selectVersion(version.image)">
+                  <img [src]="version.image.dataUrl" alt="" />
+                  <span>Version {{ n + 1 }}</span>
+                </button>
+              }
+            </div>
+          }
+        </aside>
+      }
+    </div>
   }
 
   @if (dragging()) {

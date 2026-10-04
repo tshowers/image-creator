@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -55,7 +56,7 @@ const MAX_ATTACHMENTS_PER_MESSAGE = 4;
 @Component( {
   selector: 'app-creator',
   standalone: true,
-  imports: [ FormsModule, PlatformMenuComponent ],
+  imports: [ FormsModule, RouterLink, PlatformMenuComponent ],
   templateUrl: './creator.component.html',
   styleUrl: './creator.component.css',
 } )
@@ -83,6 +84,35 @@ export class CreatorComponent {
   readonly canSend = computed( () =>
     !this.busy() && ( this.draft().trim().length > 0 || this.attachments().length > 0 ) );
   readonly isAdmin = computed( () => this.auth.user()?.uid === environment.taliferroTenantId );
+  /** Every image TODD made, oldest first, titled by the request behind it. */
+  readonly versions = computed( () => {
+    const list: { image: ChatImage; title: string }[] = [];
+    let request = '';
+    for ( const message of this.messages() ) {
+      if ( message.role === 'user' && message.text ) request = message.text;
+      if ( message.role === 'assistant' ) {
+        for ( const image of message.images ) {
+          if ( image.kind === 'generated' ) list.push( { image, title: this.titleFrom( request ) } );
+        }
+      }
+    }
+    return list;
+  } );
+  /** The version shown in the right panel (design 8b). Null means the newest. */
+  readonly selectedImageId = signal<string | null>( null );
+  readonly selected = computed( () => {
+    const list = this.versions();
+    return list.find( ( v ) => v.image.id === this.selectedImageId() ) ?? list[list.length - 1] ?? null;
+  } );
+  /** "Shown at N% of actual size", measured when the stage image loads. */
+  readonly shownPercent = signal( 100 );
+  /** User messages whose long prompt has been expanded. */
+  readonly expanded = signal<ReadonlySet<number>>( new Set() );
+  readonly copied = signal( false );
+  readonly noneLeft = computed( () => this.usage()?.remaining === 0 && !this.usage()?.unlimited );
+  /** Quick changes offered under the newest image. */
+  readonly quickChanges = ['Lighter background', 'Bigger logo', 'Try another style'];
+
   readonly hasGeneratedImages = computed( () =>
     this.messages().some( ( message ) => message.images.some( ( image ) => image.kind === 'generated' ) ) );
 
@@ -95,6 +125,11 @@ export class CreatorComponent {
   private dragDepth = 0;
 
   constructor () {
+    // A new image always takes the panel.
+    effect( () => {
+      this.versions().length;
+      this.selectedImageId.set( null );
+    } );
     effect( () => {
       if ( this.auth.user() ) void this.refreshUsage();
     } );
@@ -247,12 +282,68 @@ export class CreatorComponent {
     void downloadDataUrl( image.dataUrl, `todd-image-${ image.id.slice( 1 ) }${ dimensions }.png` );
   }
 
+  selectVersion ( image: ChatImage ): void {
+    this.selectedImageId.set( image.id );
+  }
+
+  versionLabel ( image: ChatImage ): string {
+    const list = this.versions();
+    const index = list.findIndex( ( v ) => v.image === image );
+    return `version ${ index + 1 } of ${ list.length }`;
+  }
+
+  isNewest ( image: ChatImage ): boolean {
+    const list = this.versions();
+    return list[list.length - 1]?.image === image;
+  }
+
+  onStageLoad ( img: HTMLImageElement ): void {
+    if ( img.naturalWidth ) this.shownPercent.set( Math.min( 100, Math.round( ( img.clientWidth / img.naturalWidth ) * 100 ) ) );
+  }
+
+  /** Roughly how many lines a prompt takes in the chat column (~44 characters a line). */
+  promptLines ( text: string ): number {
+    return text.split( '\n' ).reduce( ( sum, line ) => sum + Math.max( 1, Math.ceil( line.length / 44 ) ), 0 );
+  }
+
+  toggleExpanded ( index: number ): void {
+    const next = new Set( this.expanded() );
+    if ( next.has( index ) ) next.delete( index ); else next.add( index );
+    this.expanded.set( next );
+  }
+
+  /** A quick-change chip sends that request as the next message. */
+  requestChange ( text: string ): void {
+    this.draft.set( text );
+    void this.send();
+  }
+
+  /** Copies the image itself, for pasting into another app. */
+  async copyImage ( image: ChatImage ): Promise<void> {
+    try {
+      const blob = await ( await fetch( image.dataUrl ) ).blob();
+      await navigator.clipboard.write( [ new ClipboardItem( { [blob.type || 'image/png']: blob } ) ] );
+      this.copied.set( true );
+      setTimeout( () => this.copied.set( false ), 2000 );
+    } catch {
+      this.notice.set( 'Copy isn’t available in this browser. Use Download PNG.' );
+    }
+  }
+
+  private titleFrom ( request: string ): string {
+    const text = request.trim().replace( /\s+/g, ' ' );
+    if ( !text ) return 'Your image';
+    return text.length > 48 ? `${ text.slice( 0, 46 ).trimEnd() }…` : text;
+  }
+
   startOver (): void {
     if ( this.hasGeneratedImages() && !confirm( 'Start over? Images you haven\'t downloaded will be gone.' ) ) return;
     this.messages.set( [] );
     this.attachments.set( [] );
     this.draft.set( '' );
     this.notice.set( '' );
+    this.selectedImageId.set( null );
+    this.expanded.set( new Set() );
   }
 
   async signOut (): Promise<void> {
