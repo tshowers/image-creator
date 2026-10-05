@@ -14,6 +14,7 @@ import {
 } from '../../services/image-creator-api.service';
 import { PlatformMenuComponent } from '../../shared/platform-menu/platform-menu.component';
 import { ACCEPTED_IMAGE_TYPES, cropToSize, downloadDataUrl, prepareUpload, toReferenceImage } from '../../utils/image-files';
+import { track } from '../../utils/analytics';
 
 interface ChatImage {
   id: string;
@@ -268,6 +269,7 @@ export class CreatorComponent {
         height,
       };
       this.patchMessage( index, { generating: false, images: [ image ] } );
+      track( 'image_created', { size: `${ width }x${ height }` } );
       this.scrollToBottom();
     } catch ( error ) {
       if ( error instanceof ApiError && error.usage ) this.usage.set( error.usage );
@@ -279,6 +281,7 @@ export class CreatorComponent {
 
   download ( image: ChatImage ): void {
     const dimensions = image.width && image.height ? `-${ image.width }x${ image.height }` : '';
+    track( 'image_downloaded' );
     void downloadDataUrl( image.dataUrl, `todd-image-${ image.id.slice( 1 ) }${ dimensions }.png` );
   }
 
