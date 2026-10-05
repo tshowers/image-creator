@@ -101,7 +101,7 @@ export class CreatorComponent {
   } );
   /** The version shown in the right panel (design 8b). Null means the newest. */
   readonly selectedImageId = signal<string | null>( null );
-  readonly selected = computed( () => {
+  readonly selected = computed( (): { image: ChatImage; title: string } | null => {
     const list = this.versions();
     return list.find( ( v ) => v.image.id === this.selectedImageId() ) ?? list[list.length - 1] ?? null;
   } );

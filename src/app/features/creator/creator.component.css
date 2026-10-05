@@ -69,14 +69,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 .row-user { justify-content: flex-end; }
 .user-message { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: 88%; }
 .bubble { padding: 12px 16px; border-radius: 20px 20px 6px 20px; background: var(--text); color: var(--bg); font-size: 15px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
-.user-images { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.user-image { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; background: var(--surface); font-size: 13px; font-weight: 600; }
-.user-image img { width: 28px; height: 28px; object-fit: cover; border-radius: 50%; }
 .avatar { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px var(--surface2); }
 .avatar img { width: 22px; height: 22px; object-fit: contain; }
 .todd-message { flex: 1; min-width: 0; }
 .todd-text { margin: 4px 0 0; font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
-.email-placeholder { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--surface); color: var(--muted); font-size: 14px; }
 
 /* Artifact link card + quick changes */
 .artifact { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 12px; padding: 10px 12px; border: 0; border-radius: 16px; background: var(--t-cyan); color: var(--t-cyan-fg); text-align: left; }
@@ -128,12 +124,6 @@ button.dismiss { padding: 2px 8px; border: 0; background: transparent; color: va
 
 /* ---------- 8b: the image panel ---------- */
 .panel { display: flex; flex-direction: column; min-height: 0; margin: 0 24px 22px 0; padding: 14px 16px; border-radius: 24px; background: var(--surface); }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.toolbar-gap { flex: 1; }
-.seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--surface2); }
-.seg button { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: var(--text); font-size: 14px; font-weight: 600; }
-.seg button.active { background: var(--bg); box-shadow: 0 1px 3px rgba(0, 0, 0, .1); font-weight: 700; }
-.seg svg { width: 16px; height: 16px; }
 
 .drop-overlay { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: rgba(14, 21, 30, .55); pointer-events: none; }
 .drop-overlay div { padding: 36px 48px; border: 2px dashed #fff; border-radius: 24px; color: #fff; font-size: 18px; font-weight: 700; }
