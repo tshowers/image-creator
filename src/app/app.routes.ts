@@ -21,5 +21,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import( './features/about/about.component' ).then( ( m ) => m.AboutComponent ),
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () =>
+      import( './features/not-found/not-found.component' ).then( ( m ) => m.NotFoundComponent ),
+  },
 ];
