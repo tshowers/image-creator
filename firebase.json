@@ -2,6 +2,7 @@
   "hosting": {
     "site": "todd-image-creator",
     "public": "dist/image-creator/browser",
+    "trailingSlash": false,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
