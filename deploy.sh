@@ -46,6 +46,14 @@ for page in index.html index.csr.html; do
     exit 1
   fi
 done
+# index.html is the prerendered home page search engines read; index.csr.html
+# is the empty shell. Catch the home page falling back to the shell.
+for page in index.html help/index.html about/index.html; do
+  if ! grep -q "<h1" "${PUBLIC_DIR}/${page}"; then
+    echo "${PUBLIC_DIR}/${page} was not prerendered (no page content) - deploy aborted, nothing was deployed." >&2
+    exit 1
+  fi
+done
 MAIN_JS="$(grep -oE 'main-[A-Za-z0-9]+\.js' "${PUBLIC_DIR}/index.csr.html" | head -n 1)"
 if [ ! -s "${PUBLIC_DIR}/${MAIN_JS}" ]; then
   echo "index.csr.html points to ${MAIN_JS}, which was not built - deploy aborted, nothing was deployed." >&2

@@ -19,7 +19,14 @@ export class AuthService {
       this.user.set( null );
       return;
     }
-    onAuthStateChanged( getAuth(), ( user ) => this.user.set( user ) );
+    onAuthStateChanged( getAuth(), ( user ) => {
+      this.user.set( user );
+      // Read by index.html before the app loads (see ic-signed-in-boot).
+      try {
+        if ( user ) localStorage.setItem( 'image_creator_signed_in', '1' );
+        else localStorage.removeItem( 'image_creator_signed_in' );
+      } catch { /* storage blocked */ }
+    } );
   }
 
   /**

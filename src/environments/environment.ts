@@ -1,5 +1,8 @@
+import packageJson from '../../package.json';
+
 export const environment = {
   production: false,
+  VERSION: String( packageJson.version || '' ),
   PLATFORM_URL: 'https://images.taliferro.tech',
   backendURL: 'https://api.taliferro.tech/api',
   taliferroTenantId: 'yH3nWanUv0RqDCNfwXBOXLWuxt52',

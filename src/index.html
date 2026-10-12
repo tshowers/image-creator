@@ -20,6 +20,19 @@
   <meta name="twitter:description" content="Describe the image you want. TODD creates it.">
   <meta name="twitter:image" content="https://images.taliferro.tech/todd-image-creator.png">
   <link rel="icon" type="image/png" href="todd-icon.png">
+  <!-- The home page is prerendered signed-out for search engines. For someone
+       who was signed in last visit, hide it until the app renders so they
+       don't see "Sign in" flash first. AppComponent removes the class. -->
+  <style>.ic-signed-in-boot app-root { visibility: hidden; }</style>
+  <script>
+    try {
+      if (location.pathname === '/' && localStorage.getItem('image_creator_signed_in')) {
+        document.documentElement.classList.add('ic-signed-in-boot');
+        // Never leave the page blank if the app fails to start.
+        setTimeout(function () { document.documentElement.classList.remove('ic-signed-in-boot'); }, 4000);
+      }
+    } catch (e) {}
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
