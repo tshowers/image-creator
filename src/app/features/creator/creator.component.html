@@ -13,9 +13,16 @@
           @if (u.unlimited) {
             <span class="usage" title="No daily limit on this account"><span class="long">Unlimited images</span><span class="short">Unlimited</span></span>
           } @else {
-            <span class="usage" [class.usage-empty]="u.remaining === 0" title="Resets at midnight Pacific time">
-              <span class="long">{{ u.remaining }} of {{ u.limit }} left today</span><span class="short">{{ u.remaining }} left</span>
+            <span class="usage" [class.usage-empty]="noneLeft()" title="Free images reset at midnight Pacific time. Bought images never expire.">
+              <span class="long">{{ u.remaining }} of {{ u.limit }} free left today@if (u.credits) { · {{ u.credits }} bought}</span><span class="short">{{ (u.remaining || 0) + (u.credits || 0) }} left</span>
             </span>
+            @if ((noneLeft() && u.pack) || buying() !== 'idle') {
+              @if (buying() === 'waiting') {
+                <button type="button" class="pill" (click)="cancelBuying()" data-cy="buy-credits-waiting">Finish checkout in the new tab…</button>
+              } @else {
+                <button type="button" class="pill pill-buy" (click)="buyMore()" [disabled]="buying() === 'starting'" data-cy="buy-credits">Buy 5 more images</button>
+              }
+            }
           }
         }
         @if (messages().length) {
@@ -62,7 +69,7 @@
                     <a class="pill big" routerLink="/help">How it works</a>
                   </div>
                   <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
-                  <p class="tt-made-by tt-made-by--center"><a href="https://todd.taliferro.tech" target="_blank" rel="noopener"><span class="tt-made-by__todd"><img src="todd-icon.png" alt="" /></span>Powered by <strong>TODD</strong></a><i aria-hidden="true"></i><a href="https://find.taliferro.tech" target="_blank" rel="noopener">Also from us <span class="um-logo" data-app="find" aria-hidden="true"></span><strong>Find</strong></a></p>
+                  <p class="tt-made-by tt-made-by--center"><a href="https://todd.taliferro.tech" target="_blank" rel="noopener"><span class="tt-made-by__todd"><img src="todd-icon.png" alt="" /></span>Powered by <strong>TODD</strong></a><i aria-hidden="true"></i><a appAlsoFromUs></a></p>
                 }
               </section>
             } @else {
@@ -133,7 +140,7 @@
                       @if (message.error) {
                         <div class="error">
                           <span>{{ message.error }}</span>
-                          @if (usage()?.remaining !== 0) {
+                          @if (!noneLeft()) {
                             <button type="button" class="pill" (click)="generate(i)" [disabled]="busy()">Try again</button>
                           }
                         </div>
@@ -180,7 +187,7 @@
               <textarea
                 #composer
                 rows="1"
-                [placeholder]="noneLeft() ? 'No images left today' : (selected() ? 'Ask for changes…' : 'Describe the image you want…')"
+                [placeholder]="noneLeft() ? 'No images left today. Buy more to keep going.' : (selected() ? 'Ask for changes…' : 'Describe the image you want…')"
                 [disabled]="noneLeft()"
                 [ngModel]="draft()"
                 (ngModelChange)="draft.set($event)"
@@ -204,10 +211,7 @@
             }
           </footer>
         } @else {
-          <footer class="page-foot">
-            <span><a routerLink="/help">Help</a><i aria-hidden="true">·</i><a routerLink="/about">About</a></span>
-            <span>Taliferro Tech, LLC</span>
-          </footer>
+          <app-site-footer><a routerLink="/help">Help</a><a routerLink="/about">About</a></app-site-footer>
         }
       </section>
 

@@ -15,6 +15,8 @@ import {
 import { PlatformMenuComponent } from '../../shared/platform-menu/platform-menu.component';
 import { ACCEPTED_IMAGE_TYPES, cropToSize, downloadDataUrl, prepareUpload, toReferenceImage } from '../../utils/image-files';
 import { track } from '../../utils/analytics';
+import { SiteFooterComponent } from '../../shared/site-footer/site-footer.component';
+import { AlsoFromUsComponent } from '../../shared/also-from-us/also-from-us.component';
 
 interface ChatImage {
   id: string;
@@ -57,7 +59,7 @@ const MAX_ATTACHMENTS_PER_MESSAGE = 4;
 @Component( {
   selector: 'app-creator',
   standalone: true,
-  imports: [ FormsModule, RouterLink, PlatformMenuComponent ],
+  imports: [ AlsoFromUsComponent, SiteFooterComponent,  FormsModule, RouterLink, PlatformMenuComponent ],
   templateUrl: './creator.component.html',
   styleUrl: './creator.component.css',
 } )
@@ -110,7 +112,10 @@ export class CreatorComponent {
   /** User messages whose long prompt has been expanded. */
   readonly expanded = signal<ReadonlySet<number>>( new Set() );
   readonly copied = signal( false );
-  readonly noneLeft = computed( () => this.usage()?.remaining === 0 && !this.usage()?.unlimited );
+  /** Out of free images today AND prepaid credits - the composer offers "Buy more". */
+  readonly noneLeft = computed( () => this.usage()?.remaining === 0 && !this.usage()?.unlimited && !( this.usage()?.credits || 0 ) );
+  /** 'waiting' while Stripe checkout is open in its own tab. */
+  readonly buying = signal<'idle' | 'starting' | 'waiting'>( 'idle' );
   /** Quick changes offered under the newest image. */
   readonly quickChanges = ['Lighter background', 'Bigger logo', 'Try another style'];
 
@@ -134,6 +139,55 @@ export class CreatorComponent {
     effect( () => {
       if ( this.auth.user() ) void this.refreshUsage();
     } );
+    this.handleReturnFromCheckout();
+  }
+
+  /** Buys a credit pack. Checkout opens in a new tab so the images here aren't lost. */
+  async buyMore (): Promise<void> {
+    const pack = this.usage()?.pack;
+    if ( !pack ) return;
+    const before = this.usage()?.credits || 0;
+    const tab = window.open( '', '_blank' );
+    this.buying.set( 'starting' );
+    try {
+      await this.api.buyCredits( pack, tab );
+    } catch ( error ) {
+      this.buying.set( 'idle' );
+      this.notice.set( error instanceof Error ? error.message : 'Checkout couldn’t start.' );
+      return;
+    }
+    if ( !tab ) return;
+    this.buying.set( 'waiting' );
+    track( 'credits_checkout_started', { pack } );
+    const until = Date.now() + 20 * 60 * 1000;
+    while ( this.buying() === 'waiting' && Date.now() < until ) {
+      await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
+      await this.refreshUsage();
+      if ( ( this.usage()?.credits || 0 ) > before ) {
+        this.buying.set( 'idle' );
+        this.notice.set( 'Thanks! Your images were added.' );
+        return;
+      }
+    }
+    this.buying.set( 'idle' );
+  }
+
+  cancelBuying (): void {
+    this.buying.set( 'idle' );
+  }
+
+  /** Stripe returns here with ?checkout=...; the checkout tab closes itself. */
+  private handleReturnFromCheckout (): void {
+    if ( typeof window === 'undefined' ) return;
+    const params = new URLSearchParams( location.search );
+    if ( !params.get( 'checkout' ) ) return;
+    const success = params.get( 'checkout' ) === 'success';
+    history.replaceState( history.state, '', location.pathname );
+    if ( success && window.opener ) {
+      window.close();
+      return;
+    }
+    if ( success ) this.notice.set( 'Thanks! Your images will appear in a moment.' );
   }
 
   /** Nothing is saved, so warn before the tab takes the images with it. */

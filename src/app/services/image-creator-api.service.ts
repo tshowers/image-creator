@@ -10,6 +10,10 @@ export interface Usage {
   limit: number | null;
   remaining: number | null;
   unlimited?: boolean;
+  /** Prepaid images, spent once today's free ones are gone (never expire). */
+  credits?: number;
+  /** The credit pack to offer when both run out. */
+  pack?: string;
 }
 
 export type ImageSize = '1024x1024' | '1536x1024' | '1024x1536' | '1248x2688';
@@ -78,6 +82,30 @@ export class ImageCreatorApiService {
     referenceImages: string[],
   ): Promise<GenerateResponse> {
     return this.request<GenerateResponse>( 'POST', 'generate', { prompt, size, background, referenceImages } );
+  }
+
+  /**
+   * Opens Stripe Checkout for a credit pack in `tab` (opened synchronously in
+   * the click, so the browser allows it) - or this tab if it was blocked.
+   * Credits are added by Stripe's webhook, so callers poll getUsage().
+   */
+  async buyCredits ( pack: string, tab: Window | null ): Promise<void> {
+    const token = await this.auth.getIdToken();
+    const headers = new HttpHeaders( { Authorization: `Bearer ${ token }` } );
+    let url = '';
+    try {
+      const res = await firstValueFrom( this.http.post<{ url: string }>( `${ environment.backendURL }/billing/checkout-credits`, {
+        pack,
+        returnUrl: `${ location.origin }${ location.pathname }`,
+      }, { headers } ) );
+      url = res.url;
+    } catch ( error ) {
+      tab?.close();
+      const message = error instanceof HttpErrorResponse ? error.error?.message : '';
+      throw new Error( message || 'Checkout couldn’t start. Please try again.' );
+    }
+    if ( tab && !tab.closed ) tab.location.href = url;
+    else location.assign( url );
   }
 
   private async request<T> ( method: 'GET' | 'POST', path: string, body?: unknown ): Promise<T> {
