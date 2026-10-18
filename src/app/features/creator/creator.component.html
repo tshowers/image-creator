@@ -236,6 +236,12 @@
             <img #stageImg [src]="current.image.dataUrl" alt="Image created by TODD" (load)="onStageLoad(stageImg)" />
           </div>
           <p class="stage-caption">Shown at {{ shownPercent() }}% of actual size</p>
+          @if (current.image.prompt) {
+            <details class="sent-prompt">
+              <summary>Prompt TODD sent</summary>
+              <p>{{ current.image.prompt }}</p>
+            </details>
+          }
 
           @if (versions().length > 1) {
             <span class="label">Versions</span>
