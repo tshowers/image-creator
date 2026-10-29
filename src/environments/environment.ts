@@ -3,7 +3,7 @@ import packageJson from '../../package.json';
 export const environment = {
   production: false,
   VERSION: String( packageJson.version || '' ),
-  PLATFORM_URL: 'https://images.taliferro.tech',
+  PLATFORM_URL: 'https://images.16ahead.com',
   backendURL: 'https://api.taliferro.tech/api',
   taliferroTenantId: 'yH3nWanUv0RqDCNfwXBOXLWuxt52',
   // Firebase web config is public by design; access is enforced by Auth + the backend.
@@ -14,6 +14,6 @@ export const environment = {
     storageBucket: 'taliferrotech.appspot.com',
     messagingSenderId: '633736143723',
     appId: '1:633736143723:web:1f91a0cc7efcdc9b5fe22e',
-    measurementId: 'G-YQ9PHPM6FJ',
+    measurementId: 'G-4QZ1CSSGYJ',
   },
 };

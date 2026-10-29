@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /auth/callback
 
-Sitemap: https://images.taliferro.tech/sitemap.xml
+Sitemap: https://images.16ahead.com/sitemap.xml

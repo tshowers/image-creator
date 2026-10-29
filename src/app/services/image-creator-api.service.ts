@@ -143,7 +143,7 @@ export class ImageCreatorApiService {
     } catch ( error ) {
       if ( error instanceof HttpErrorResponse ) {
         const message = error.status === 0 ?
-          'Could not reach TODD. Check your connection and try again.' :
+          'Could not reach 16Ahead. Check your connection and try again.' :
           error.status === 413 ?
             'Those images are too large to send together. Try fewer or smaller attachments.' :
             error.error?.message || 'Something went wrong. Please try again.';

@@ -193,7 +193,7 @@ export class CreatorComponent {
       await this.refreshUsage();
       if ( ( this.usage()?.limit || 0 ) > before ) {
         this.buying.set( 'idle' );
-        this.notice.set( 'Thanks! TODD Suite is on: every TODD app, and 10x the free images every day.' );
+        this.notice.set( 'Thanks! 16Ahead Suite is on: every 16Ahead app, and 10x the free images every day.' );
         return;
       }
     }

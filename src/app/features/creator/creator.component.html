@@ -3,8 +3,8 @@
 <div class="app" [class.app--panel]="!!auth.user() && !!selected()">
   <header class="topbar">
     <a class="brand" routerLink="/">
-      <span class="brand-mark"><img src="assets/image-creator-logo.png" alt="" /></span>
-      <span class="brand-name"><span class="brand-todd">TODD </span><span class="brand-product">Image Creator</span></span>
+      <span class="brand-mark"><img class="brand-mark--light" src="assets/brand/products/svg/light/14-image-creator.svg" alt="" /><img class="brand-mark--dark" src="assets/brand/products/svg/dark/14-image-creator.svg" alt="" /></span>
+      <span class="brand-name"><span class="brand-todd">16Ahead </span><span class="brand-product">Image Creator</span></span>
     </a>
 
     <div class="topbar-actions">
@@ -21,7 +21,7 @@
                 <button type="button" class="pill" (click)="cancelBuying()" data-cy="buy-credits-waiting">Finish checkout in the new tab…</button>
               } @else {
                 <button type="button" class="pill pill-buy" (click)="buyMore()" [disabled]="buying() === 'starting'" data-cy="buy-credits">Buy 5 more images</button>
-                <button type="button" class="pill" (click)="buySuite()" [disabled]="buying() === 'starting'" data-cy="buy-suite" title="Every TODD app, and 10x the free images every day"><span class="long">Get TODD Suite · 10x daily</span><span class="short">Suite</span></button>
+                <button type="button" class="pill" (click)="buySuite()" [disabled]="buying() === 'starting'" data-cy="buy-suite" title="Every 16Ahead app, and 10x the free images every day"><span class="long">Get 16Ahead Suite · 10x daily</span><span class="short">Suite</span></button>
               }
             }
           }
@@ -51,8 +51,8 @@
                 <span class="intro-mark"><span class="um-glyph" data-key="image-creator"></span></span>
                 <h1>What should we create?</h1>
                 <p>
-                  Tell TODD what you want, or attach a logo or example image to work from.
-                  TODD will ask if anything's unclear, then create the image for you to download.
+                  Tell 16Ahead what you want, or attach a logo or example image to work from.
+                  16Ahead will ask if anything's unclear, then create the image for you to download.
                 </p>
                 @if (auth.user()) {
                   <span class="label">Try one</span>
@@ -66,11 +66,11 @@
                   </div>
                 } @else {
                   <div class="intro-actions">
-                    <button type="button" class="primary big" (click)="auth.signIn()">Sign in with TODD</button>
+                    <button type="button" class="primary big" (click)="auth.signIn()">Sign in with 16Ahead</button>
                     <a class="pill big" routerLink="/help">How it works</a>
                   </div>
                   <p class="fine-print">Nothing is saved. Download the images you want to keep before you leave.</p>
-                  <p class="tt-made-by tt-made-by--center"><a href="https://todd.taliferro.tech" target="_blank" rel="noopener"><span class="tt-made-by__todd"><img src="todd-icon.png" alt="" /></span>Powered by <strong>TODD</strong></a><i aria-hidden="true"></i><a appAlsoFromUs></a></p>
+                  <p class="tt-made-by tt-made-by--center"><a href="https://app.16ahead.com" target="_blank" rel="noopener"><span class="tt-made-by__todd"><img class="brand-mark--light" src="assets/brand/products/png/light/01-16ahead-64.png" alt="" /><img class="brand-mark--dark" src="assets/brand/products/png/dark/01-16ahead-64.png" alt="" /></span>Powered by <strong>16Ahead</strong></a><i aria-hidden="true"></i><a appAlsoFromUs></a></p>
                 }
               </section>
             } @else {
@@ -96,7 +96,7 @@
                   </div>
                 } @else {
                   <div class="row row-todd">
-                    <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
+                    <span class="avatar"><img src="todd-icon.png" alt="16Ahead" /></span>
                     <div class="todd-message">
                       <p class="todd-text">{{ message.text }}</p>
 
@@ -119,7 +119,7 @@
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                           </button>
                           <figure class="inline-result">
-                            <img [src]="image.dataUrl" alt="Image created by TODD" />
+                            <img [src]="image.dataUrl" alt="Image created by 16Ahead" />
                             @if (image.width) {
                               <figcaption>{{ image.width }} × {{ image.height }} px · PNG · {{ versionLabel(image) }}</figcaption>
                             }
@@ -153,8 +153,8 @@
 
               @if (thinking()) {
                 <div class="row row-todd">
-                  <span class="avatar"><img src="todd-icon.png" alt="TODD" /></span>
-                  <span class="dots" aria-label="TODD is thinking"><i></i><i></i><i></i></span>
+                  <span class="avatar"><img src="todd-icon.png" alt="16Ahead" /></span>
+                  <span class="dots" aria-label="16Ahead is thinking"><i></i><i></i><i></i></span>
                 </div>
               }
             }
@@ -234,12 +234,12 @@
           </div>
 
           <div class="stage">
-            <img #stageImg [src]="current.image.dataUrl" alt="Image created by TODD" (load)="onStageLoad(stageImg)" />
+            <img #stageImg [src]="current.image.dataUrl" alt="Image created by 16Ahead" (load)="onStageLoad(stageImg)" />
           </div>
           <p class="stage-caption">Shown at {{ shownPercent() }}% of actual size</p>
           @if (current.image.prompt) {
             <details class="sent-prompt">
-              <summary>Prompt TODD sent</summary>
+              <summary>Prompt 16Ahead sent</summary>
               <p>{{ current.image.prompt }}</p>
             </details>
           }
@@ -261,6 +261,6 @@
   }
 
   @if (dragging()) {
-    <div class="drop-overlay"><div>Drop images for TODD to use</div></div>
+    <div class="drop-overlay"><div>Drop images for 16Ahead to use</div></div>
   }
 </div>
