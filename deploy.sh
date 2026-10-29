@@ -37,7 +37,7 @@ for page in index.html index.csr.html; do
     echo "Build output is missing ${file} - deploy aborted, nothing was deployed." >&2
     exit 1
   fi
-  if ! grep -q "TODD Image Creator" "${file}" || ! grep -qE 'src="main-[A-Za-z0-9]+\.js"' "${file}"; then
+  if ! grep -q "16Ahead Image Creator" "${file}" || ! grep -qE 'src="main-[A-Za-z0-9]+\.js"' "${file}"; then
     echo "${file} is not the app page (no title or main script) - deploy aborted, nothing was deployed." >&2
     exit 1
   fi
