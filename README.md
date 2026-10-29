@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="public/todd-icon.png" alt="TODD" width="120">
+  <img src="public/todd-icon.png" alt="16Ahead" width="120">
 </p>
 
-<h1 align="center">TODD Image Creator</h1>
+<h1 align="center">16Ahead Image Creator</h1>
 
-<p align="center">Describe the image you want. TODD creates it.</p>
+<p align="center">Describe the image you want. 16Ahead creates it.</p>
 
-TODD Image Creator is a browser-based image workspace. A signed-in user chats
-with TODD to create logos, icons, illustrations, and other images, optionally
+16Ahead Image Creator is a browser-based image workspace. A signed-in user chats
+with 16Ahead to create logos, icons, illustrations, and other images, optionally
 attaching a logo or reference image to guide the result.
 
 ## What it does
@@ -15,7 +15,7 @@ attaching a logo or reference image to guide the result.
 - Uses a conversational workflow to clarify an image request and create it.
 - Accepts logo and example-image attachments as references.
 - Returns downloadable PNG images directly in the browser.
-- Requires TODD authentication.
+- Requires 16Ahead authentication.
 - Limits each workspace to five generated images per Pacific calendar day
   (configurable per workspace), then draws on purchased image credits.
 - Keeps uploads, generated images, and conversation history in the browser tab;
@@ -35,11 +35,11 @@ The frontend is an Angular 19 app. It calls these backend endpoints, all under
 | Endpoint | Purpose |
 |---|---|
 | `GET /image-creator/usage` | Today's used/remaining image count |
-| `POST /image-creator/chat` | One conversation turn with TODD |
+| `POST /image-creator/chat` | One conversation turn with 16Ahead |
 | `POST /image-creator/generate` | Create the image |
 | `POST /billing/checkout-credits` | Start a Stripe checkout for image credits |
 
-Sign-in goes through TODD's hosted login (`todd.taliferro.tech/login`), which
+Sign-in goes through 16Ahead's hosted login (`todd.taliferro.tech/login`), which
 redirects back to `/auth/callback` with a Firebase custom token. The backend
 authenticates every request with a verified Firebase ID token.
 
@@ -80,7 +80,7 @@ access is enforced by Firebase Auth and the backend. `VERSION` is read from
 - Google Chrome, for unit tests (ChromeHeadless) and Cypress
 - The Firebase CLI (`npm install -g firebase-tools`), only to deploy or run the
   Hosting emulator, with access to the `taliferrotech` project
-- A TODD account to sign in with
+- A 16Ahead account to sign in with
 
 ### Shared UI package
 
@@ -154,7 +154,7 @@ afterward with `git push`.
 The app is deployed to the Firebase Hosting site `todd-image-creator` in the
 `taliferrotech` project and is available at:
 
-`https://images.taliferro.tech`
+`https://images.16ahead.com`
 
 The backend can be deployed separately from the `todd-backend` project with:
 
