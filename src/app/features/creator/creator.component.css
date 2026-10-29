@@ -50,8 +50,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 
 /* 8a */
 .intro { display: flex; flex-direction: column; align-items: center; padding: 48px 0 16px; text-align: center; }
-.intro-mark { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 18px; background: var(--t-cyan); color: var(--t-cyan-fg); }
-.intro-mark .um-glyph { width: 30px; height: 30px; }
+.intro-mark { display: grid; place-items: center; width: 72px; height: 72px; }
+.intro-mark img { width: 72px; height: 72px; object-fit: contain; }
 .intro h1 { margin: 20px 0 10px; font-size: 48px; font-weight: 700; line-height: 1.05; letter-spacing: -.04em; }
 .intro > p { max-width: 560px; margin: 0 0 28px; color: var(--muted); font-size: 17px; line-height: 1.5; }
 .label { align-self: stretch; margin-bottom: 10px; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
