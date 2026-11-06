@@ -89,4 +89,13 @@ if ! curl -fsSL --retry 3 --retry-delay 5 "${LIVE_URL}" | grep -q "${MAIN_JS}"; 
   exit 1
 fi
 
+# The site is live at this point, so a failed push must not trip the ERR trap's
+# "nothing was deployed" message.
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "Pushing ${BRANCH} to GitHub..."
+if ! git push origin "${BRANCH}"; then
+  echo "Deploy succeeded, but pushing ${BRANCH} to origin failed - run 'git push origin ${BRANCH}' manually." >&2
+  exit 1
+fi
+
 echo "Image Creator hosting deploy complete - version $(node -p "require('./package.json').version")."
